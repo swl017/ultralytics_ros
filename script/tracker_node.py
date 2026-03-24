@@ -120,7 +120,8 @@ class TrackerNode(Node):
     def create_detections_array(self, results):
         detections_msg = Detection2DArray()
         bounding_box = results[0].boxes.xywh
-        classes = results[0].boxes.cls
+        # classes = results[0].boxes.cls
+        classes = results[0].boxes.id # Use ID assigned by tracker
         confidence_score = results[0].boxes.conf
         for bbox, cls, conf in zip(bounding_box, classes, confidence_score):
             detection = Detection2D()
