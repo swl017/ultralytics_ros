@@ -25,6 +25,7 @@ from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Image, CompressedImage
 from ultralytics import YOLO
+from std_msgs.msg import Bool
 from vision_msgs.msg import Detection2D, Detection2DArray, ObjectHypothesisWithPose
 from ultralytics_ros.msg import YoloResult
 
@@ -76,6 +77,7 @@ class TrackerNode(Node):
 
         self.results_pub = self.create_publisher(YoloResult, result_topic, qos_profile_sensor_data)
         self.results_vision_msg_pub = self.create_publisher(Detection2DArray, result_topic+"_vision", qos_profile_sensor_data)
+        self.detection_active_pub = self.create_publisher(Bool, result_topic+"_active", qos_profile_sensor_data)
         self.result_image_pub = self.create_publisher(Image, result_image_topic, qos_profile_sensor_data)
 
     def image_callback(self, msg):
@@ -116,6 +118,7 @@ class TrackerNode(Node):
             self.results_pub.publish(yolo_result_msg)
             self.result_image_pub.publish(yolo_result_image_msg)
             self.results_vision_msg_pub.publish(yolo_result_msg.detections)
+            self.detection_active_pub.publish(Bool(data=len(yolo_result_msg.detections.detections) > 0))
 
     def create_detections_array(self, results):
         detections_msg = Detection2DArray()
