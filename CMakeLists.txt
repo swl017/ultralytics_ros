@@ -19,12 +19,12 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(pcl_ros REQUIRED)
-find_package(tf2_eigen REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(OpenCV REQUIRED)
-find_package(PCL REQUIRED)
+find_package(pcl_conversions QUIET)
+find_package(pcl_ros QUIET)
+find_package(tf2_eigen QUIET)
+find_package(tf2_ros QUIET)
+find_package(OpenCV QUIET)
+find_package(PCL QUIET)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/YoloResult.msg"
@@ -36,32 +36,36 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 include_directories(include)
 
-add_executable(tracker_with_cloud_node src/tracker_with_cloud_node.cpp)
-ament_target_dependencies(tracker_with_cloud_node
-  rclcpp
-  geometry_msgs
-  sensor_msgs
-  std_msgs
-  vision_msgs
-  visualization_msgs
-  cv_bridge
-  image_geometry
-  message_filters
-  pcl_ros
-  tf2_eigen
-  tf2_ros
-  OpenCV
-  PCL
-)
-
-# rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
-rosidl_target_interfaces(tracker_with_cloud_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(tracker_with_cloud_node "${cpp_typesupport_target}")
-
-install(TARGETS
-  tracker_with_cloud_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+# C++ tracker_with_cloud_node requires PCL — skip if not available
+find_package(pcl_conversions QUIET)
+find_package(pcl_ros QUIET)
+if(pcl_conversions_FOUND AND pcl_ros_FOUND)
+  add_executable(tracker_with_cloud_node src/tracker_with_cloud_node.cpp)
+  ament_target_dependencies(tracker_with_cloud_node
+    rclcpp
+    geometry_msgs
+    sensor_msgs
+    std_msgs
+    vision_msgs
+    visualization_msgs
+    cv_bridge
+    image_geometry
+    message_filters
+    pcl_ros
+    tf2_eigen
+    tf2_ros
+    OpenCV
+    PCL
+  )
+  rosidl_target_interfaces(tracker_with_cloud_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(tracker_with_cloud_node "${cpp_typesupport_target}")
+  install(TARGETS
+    tracker_with_cloud_node
+    DESTINATION lib/${PROJECT_NAME}
+  )
+else()
+  message(STATUS "pcl_conversions/pcl_ros not found — skipping tracker_with_cloud_node (Python tracker_node.py still available)")
+endif()
 
 install(PROGRAMS
   script/tracker_node.py

@@ -123,17 +123,20 @@ class TrackerNode(Node):
     def create_detections_array(self, results):
         detections_msg = Detection2DArray()
         bounding_box = results[0].boxes.xywh
-        # classes = results[0].boxes.cls
-        classes = results[0].boxes.id # Use ID assigned by tracker
+        class_ids = results[0].boxes.cls      # YOLO object class indices
+        tracker_ids = results[0].boxes.id     # ByteTrack persistent tracker IDs
         confidence_score = results[0].boxes.conf
-        for bbox, cls, conf in zip(bounding_box, classes, confidence_score):
+        if tracker_ids is None:
+            tracker_ids = class_ids  # Fallback if tracker not active
+        for bbox, cls_id, trk_id, conf in zip(bounding_box, class_ids, tracker_ids, confidence_score):
             detection = Detection2D()
+            detection.id = str(int(trk_id))  # ByteTrack tracker ID (persistent per object)
             detection.bbox.center.x = float(bbox[0])
             detection.bbox.center.y = float(bbox[1])
             detection.bbox.size_x = float(bbox[2])
             detection.bbox.size_y = float(bbox[3])
             hypothesis = ObjectHypothesisWithPose()
-            hypothesis.hypothesis.class_id = results[0].names.get(int(cls))
+            hypothesis.hypothesis.class_id = str(results[0].names.get(int(cls_id), str(int(cls_id))))
             hypothesis.hypothesis.score = float(conf)
             detection.results.append(hypothesis)
             detections_msg.detections.append(detection)
