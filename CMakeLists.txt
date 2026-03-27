@@ -16,15 +16,6 @@ find_package(std_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(cv_bridge REQUIRED)
-find_package(image_geometry REQUIRED)
-find_package(message_filters REQUIRED)
-find_package(pcl_conversions QUIET)
-find_package(pcl_ros QUIET)
-find_package(tf2_eigen QUIET)
-find_package(tf2_ros QUIET)
-find_package(OpenCV QUIET)
-find_package(PCL QUIET)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/YoloResult.msg"

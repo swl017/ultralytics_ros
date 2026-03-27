@@ -131,8 +131,8 @@ class TrackerNode(Node):
         for bbox, cls_id, trk_id, conf in zip(bounding_box, class_ids, tracker_ids, confidence_score):
             detection = Detection2D()
             detection.id = str(int(trk_id))  # ByteTrack tracker ID (persistent per object)
-            detection.bbox.center.x = float(bbox[0])
-            detection.bbox.center.y = float(bbox[1])
+            detection.bbox.center.position.x = float(bbox[0])
+            detection.bbox.center.position.y = float(bbox[1])
             detection.bbox.size_x = float(bbox[2])
             detection.bbox.size_y = float(bbox[3])
             hypothesis = ObjectHypothesisWithPose()
