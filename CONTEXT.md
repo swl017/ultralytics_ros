@@ -14,7 +14,8 @@ YOLO-based 2D object detection with ByteTrack tracking. Optional 3D projection u
 
 #### Publishers
 - `yolo_result` (`ultralytics_ros/YoloResult`) — raw YOLO detections with tracker IDs
-- `yolo_result_vision` (`vision_msgs/Detection2DArray`) — standard vision format (consumed by mas_multiview_py)
+- `yolo_result_vision` (`vision_msgs/Detection2DArray`) — standard vision format with tracker IDs in Detection2D.id (consumed by mas_multiview)
+- `yolo_result_active` (`std_msgs/Bool`) — true when detections are present (compact cross-agent detection status)
 - `yolo_image` (`sensor_msgs/Image`) — annotated image with drawn detections
 
 #### Parameters
@@ -56,7 +57,7 @@ YOLO-based 2D object detection with ByteTrack tracking. Optional 3D projection u
 - `ultralytics_ros/YoloResult` — Detection2DArray + optional segmentation masks
 
 ## Dependencies
-None (standalone). Publishes detections consumed by mas_multiview_py.
+None (standalone). Publishes detections consumed by mas_multiview.
 
 ## Key Files
 - `script/tracker_node.py` — Python YOLO detection node
